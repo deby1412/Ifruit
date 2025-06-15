@@ -4,11 +4,23 @@ import HomePage from './components/HomePage';
 import PromotionsPage from './components/PromotionsPage';
 import AuthPage from './components/AuthPage';
 import CartPage from './components/CartPage';
+import FavoritesPage from './components/FavoritesPage';
+import ProfilePage from './components/ProfilePage';
+import SupplierDashboard from './components/SupplierDashboard';
+import DeliveryDashboard from './components/DeliveryDashboard';
+import HortifrutiPage from './components/HortifrutiPage';
+import BebidasPage from './components/BebidasPage';
+import SobrePage from './components/SobrePage';
+import GourmetPage from './components/GourmetPage';
+import ProductPromotionPage from './components/ApplePage';
 import { CartItem, Product } from './type/Product';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [favoriteItems, setFavoriteItems] = useState<Product[]>([]);
+  const [supplierName] = useState('Hortifruti do João');
+  const [deliveryPersonName] = useState('João Silva');
 
   const handleNavigate = (page: string) => {
     setCurrentPage(page);
@@ -46,6 +58,25 @@ function App() {
     setCartItems([]);
   };
 
+  const addToFavorites = (product: Product) => {
+    setFavoriteItems(prevItems => {
+      const isAlreadyFavorite = prevItems.find(item => item.id === product.id);
+      if (isAlreadyFavorite) {
+        return prevItems.filter(item => item.id !== product.id);
+      } else {
+        return [...prevItems, product];
+      }
+    });
+  };
+
+  const removeFromFavorites = (id: number) => {
+    setFavoriteItems(prevItems => prevItems.filter(item => item.id !== id));
+  };
+
+  const isFavorite = (id: number) => {
+    return favoriteItems.some(item => item.id === id);
+  };
+
   const getTotalItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
@@ -53,9 +84,23 @@ function App() {
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
-        return <HomePage onAddToCart={addToCart} />;
+        return (
+          <HomePage 
+            onAddToCart={addToCart} 
+            onToggleFavorite={addToFavorites}
+            isFavorite={isFavorite}
+            onNavigate={handleNavigate}
+          />
+        );
       case 'promocoes':
-        return <PromotionsPage onAddToCart={addToCart} />;
+        return (
+          <PromotionsPage 
+            onAddToCart={addToCart}
+            onToggleFavorite={addToFavorites}
+            isFavorite={isFavorite}
+            onNavigate={handleNavigate}
+          />
+        );
       case 'auth':
         return <AuthPage onNavigate={handleNavigate} />;
       case 'cart':
@@ -68,54 +113,91 @@ function App() {
             onClearCart={clearCart}
           />
         );
+      case 'favorites':
+        return (
+          <FavoritesPage
+            onNavigate={handleNavigate}
+            favoriteItems={favoriteItems}
+            onRemoveFromFavorites={removeFromFavorites}
+            onAddToCart={addToCart}
+          />
+        );
+      case 'profile':
+        return <ProfilePage onNavigate={handleNavigate} />;
+      case 'supplier-dashboard':
+        return (
+          <SupplierDashboard
+            onNavigate={handleNavigate}
+            supplierName={supplierName}
+          />
+        );
+      case 'delivery-dashboard':
+        return (
+          <DeliveryDashboard
+            onNavigate={handleNavigate}
+            deliveryPersonName={deliveryPersonName}
+          />
+        );
       case 'hortifruti':
         return (
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-800 mb-4">Hortifruti</h1>
-              <p className="text-gray-600">Página em desenvolvimento</p>
-            </div>
-          </div>
+          <HortifrutiPage
+            onAddToCart={addToCart}
+            onToggleFavorite={addToFavorites}
+            isFavorite={isFavorite}
+          />
         );
       case 'bebidas':
         return (
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-800 mb-4">Bebidas</h1>
-              <p className="text-gray-600">Página em desenvolvimento</p>
-            </div>
-          </div>
+          <BebidasPage
+            onAddToCart={addToCart}
+            onToggleFavorite={addToFavorites}
+            isFavorite={isFavorite}
+          />
         );
       case 'sobre':
-        return (
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-800 mb-4">Sobre</h1>
-              <p className="text-gray-600">Página em desenvolvimento</p>
-            </div>
-          </div>
-        );
+        return <SobrePage />;
       case 'gourmet':
         return (
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-800 mb-4">Gourmet</h1>
-              <p className="text-gray-600">Página em desenvolvimento</p>
-            </div>
-          </div>
+          <GourmetPage
+            onAddToCart={addToCart}
+            onToggleFavorite={addToFavorites}
+            isFavorite={isFavorite}
+          />
+        );
+      case 'product-promotion':
+        return (
+          <ProductPromotionPage
+            onNavigate={handleNavigate}
+            onAddToCart={addToCart}
+            onToggleFavorite={addToFavorites}
+            isFavorite={isFavorite}
+          />
         );
       default:
-        return <HomePage onAddToCart={addToCart} />;
+        return (
+          <HomePage 
+            onAddToCart={addToCart} 
+            onToggleFavorite={addToFavorites}
+            isFavorite={isFavorite}
+            onNavigate={handleNavigate}
+          />
+        );
     }
   };
 
+  // Don't show header for dashboards
+  const showHeader = !['supplier-dashboard', 'delivery-dashboard', 'profile', 'product-promotion'].includes(currentPage);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header 
-        cartItems={getTotalItems()} 
-        currentPage={currentPage}
-        onNavigate={handleNavigate}
-      />
+      {showHeader && (
+        <Header 
+          cartItems={getTotalItems()} 
+          favoriteItems={favoriteItems.length}
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+        />
+      )}
       {renderPage()}
     </div>
   );

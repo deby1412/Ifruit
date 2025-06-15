@@ -1,14 +1,17 @@
 import React from 'react';
-import { Clock, Percent, Tag, Star } from 'lucide-react';
+import { Clock, Percent, Tag, Star, Heart } from 'lucide-react';
 import { Product } from '../type/Product';
 import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
 
 interface PromotionsPageProps {
   onAddToCart: (product: Product) => void;
+  onToggleFavorite: (product: Product) => void;
+  isFavorite: (id: number) => boolean;
+  onNavigate: (page: string) => void;
 }
 
-export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
+export default function PromotionsPage({ onAddToCart, onToggleFavorite, isFavorite, onNavigate }: PromotionsPageProps) {
   const promotions: (Product & { timeLeft: string })[] = [
     {
       id: 5,
@@ -19,7 +22,10 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
       discount: '43% OFF',
       timeLeft: '2 dias',
       category: 'Frutas',
-      unit: 'kg'
+      unit: 'kg',
+      supplier: 'Frutas do Vale',
+      rating: 4.7,
+      reviews: 120
     },
     {
       id: 6,
@@ -30,7 +36,10 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
       discount: '33% OFF',
       timeLeft: '1 dia',
       category: 'Frutas',
-      unit: 'kg'
+      unit: 'kg',
+      supplier: 'Bananas Brasil',
+      rating: 4.5,
+      reviews: 98
     },
     {
       id: 7,
@@ -41,7 +50,10 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
       discount: '38% OFF',
       timeLeft: '3 dias',
       category: 'Verduras',
-      unit: 'kg'
+      unit: 'kg',
+      supplier: 'Horta Urbana',
+      rating: 4.6,
+      reviews: 87
     },
     {
       id: 8,
@@ -52,7 +64,10 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
       discount: '42% OFF',
       timeLeft: '5 dias',
       category: 'Frutas',
-      unit: 'kg'
+      unit: 'kg',
+      supplier: 'Citrus Sul',
+      rating: 4.8,
+      reviews: 110
     },
     {
       id: 9,
@@ -63,7 +78,10 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
       discount: '38% OFF',
       timeLeft: '4 dias',
       category: 'Verduras',
-      unit: 'kg'
+      unit: 'kg',
+      supplier: 'Horta Urbana',
+      rating: 4.4,
+      reviews: 75
     },
     {
       id: 10,
@@ -74,7 +92,10 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
       discount: '38% OFF',
       timeLeft: '2 dias',
       category: 'Frutas',
-      unit: 'un'
+      unit: 'un',
+      supplier: 'Tropical Frutas',
+      rating: 4.7,
+      reviews: 65
     },
     {
       id: 11,
@@ -85,7 +106,10 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
       discount: '33% OFF',
       timeLeft: '1 dia',
       category: 'Verduras',
-      unit: 'un'
+      unit: 'un',
+      supplier: 'Horta Urbana',
+      rating: 4.3,
+      reviews: 54
     },
     {
       id: 12,
@@ -96,7 +120,10 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
       discount: '33% OFF',
       timeLeft: '6 dias',
       category: 'Frutas',
-      unit: 'kg'
+      unit: 'kg',
+      supplier: 'Frutas do Vale',
+      rating: 4.9,
+      reviews: 140
     }
   ];
 
@@ -107,11 +134,21 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
     ? promotions
     : promotions.filter(promo => promo.category === selectedCategory);
 
+  const handleProductClick = (productId: number) => {
+    if (productId === 5) { // Maçã Fuji Premium
+      onNavigate('product-promotion');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* Hero com imagem6.jpg */}
+      <section
+        className="relative bg-cover bg-center text-white py-20"
+        style={{ backgroundImage: "url('/imagem6.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 opacity-70"></div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center mb-4">
             <Percent className="w-12 h-12 mr-3" />
             <h1 className="text-4xl md:text-6xl font-bold">Promoções</h1>
@@ -128,7 +165,7 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
 
       {/* Filtro por categoria */}
       <section className="py-8 bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-800">
               {filteredPromotions.length} ofertas disponíveis
@@ -152,9 +189,9 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
         </div>
       </section>
 
-      {/* Sidebar + Cards */}
+      {/* Conteúdo com Sidebar + Cards */}
       <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-5 gap-6">
           <div className="col-span-1">
             <Sidebar />
           </div>
@@ -162,22 +199,38 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
           <div className="col-span-1 lg:col-span-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPromotions.map((promo) => (
-                <div key={promo.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div key={promo.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-1">
                   <div className="relative">
                     <img src={promo.image} alt={promo.name} className="w-full h-48 object-cover" />
                     <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">
                       {promo.discount}
                     </div>
-                    <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs flex items-center">
+                    <div className="absolute top-2 right-2 flex space-x-2">
+                      <button
+                        onClick={() => onToggleFavorite(promo)}
+                        className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow hover:bg-gray-100"
+                      >
+                        <Heart
+                          className={`w-4 h-4 ${
+                            isFavorite(promo.id)
+                              ? 'text-red-500 fill-current'
+                              : 'text-gray-400'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    <div className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs flex items-center">
                       <Clock className="w-3 h-3 mr-1" />
                       {promo.timeLeft}
                     </div>
-                    <div className="absolute bottom-2 left-2 bg-orange-500 text-white px-2 py-1 rounded text-xs">
+                    <div className="absolute bottom-2 right-2 bg-orange-500 text-white px-2 py-1 rounded text-xs">
                       {promo.category}
                     </div>
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-gray-800 mb-2">{promo.name}</h3>
+                    <h3 className="font-semibold text-gray-800 mb-2 cursor-pointer hover:text-red-500 transition-colors" onClick={() => handleProductClick(promo.id)}>
+                      {promo.name}
+                    </h3>
                     <div className="flex items-center justify-between mb-3">
                       <div>
                         <span className="text-xl font-bold text-red-500">
@@ -196,12 +249,20 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
                           <Star key={i} className="w-4 h-4 fill-current" />
                         ))}
                       </div>
-                      <button
-                        onClick={() => onAddToCart(promo)}
-                        className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 font-semibold text-sm"
-                      >
-                        Adicionar
-                      </button>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleProductClick(promo.id)}
+                          className="bg-gray-500 text-white px-3 py-2 rounded-lg hover:bg-gray-600 transition-all font-semibold text-sm"
+                        >
+                          Ver
+                        </button>
+                        <button
+                          onClick={() => onAddToCart(promo)}
+                          className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all font-semibold text-sm"
+                        >
+                          Adicionar
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -213,7 +274,7 @@ export default function PromotionsPage({ onAddToCart }: PromotionsPageProps) {
 
       {/* Oferta Especial */}
       <section className="py-16 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center mb-4">
             <Tag className="w-8 h-8 mr-3" />
             <h2 className="text-3xl font-bold">Oferta Especial do Dia</h2>

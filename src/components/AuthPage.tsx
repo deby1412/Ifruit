@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, ArrowLeft, Store, Truck } from 'lucide-react';
 
 interface AuthPageProps {
   onNavigate: (page: string) => void;
@@ -7,15 +7,22 @@ interface AuthPageProps {
 
 export default function AuthPage({ onNavigate }: AuthPageProps) {
   const [isLogin, setIsLogin] = useState(true);
+  const [userType, setUserType] = useState<'customer' | 'supplier' | 'delivery'>('customer');
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    businessName: '',
+    cnpj: '',
+    address: '',
+    phone: '',
+    vehicleType: '',
+    licenseNumber: ''
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -24,9 +31,56 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would handle the actual login/register logic
-    console.log('Form submitted:', formData);
+    
+    if (userType === 'supplier') {
+      onNavigate('supplier-dashboard');
+    } else if (userType === 'delivery') {
+      onNavigate('delivery-dashboard');
+    } else {
+      console.log('Customer form submitted:', formData);
+      onNavigate('home');
+    }
   };
+
+  const getUserTypeColor = () => {
+    switch (userType) {
+      case 'supplier': return 'green';
+      case 'delivery': return 'blue';
+      default: return 'red';
+    }
+  };
+
+  const getColorClasses = (color: string) => {
+    const colors = {
+      red: {
+        border: 'border-red-500',
+        bg: 'bg-red-50',
+        text: 'text-red-700',
+        focus: 'focus:ring-red-500',
+        button: 'from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600',
+        link: 'text-red-600 hover:text-red-500'
+      },
+      green: {
+        border: 'border-green-500',
+        bg: 'bg-green-50',
+        text: 'text-green-700',
+        focus: 'focus:ring-green-500',
+        button: 'from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600',
+        link: 'text-green-600 hover:text-green-500'
+      },
+      blue: {
+        border: 'border-blue-500',
+        bg: 'bg-blue-50',
+        text: 'text-blue-700',
+        focus: 'focus:ring-blue-500',
+        button: 'from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600',
+        link: 'text-blue-600 hover:text-blue-500'
+      }
+    };
+    return colors[color as keyof typeof colors];
+  };
+
+  const colorClasses = getColorClasses(getUserTypeColor());
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -52,19 +106,80 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
           </h2>
           <p className="mt-2 text-gray-600">
             {isLogin 
-              ? 'Acesse sua conta para continuar comprando' 
-              : 'Cadastre-se e aproveite nossas ofertas exclusivas'
+              ? 'Acesse sua conta para continuar' 
+              : 'Cadastre-se e aproveite nossas ofertas'
             }
           </p>
+        </div>
+
+        {/* User Type Selection */}
+        <div className="bg-white rounded-lg p-4 shadow-sm">
+          <h3 className="text-sm font-medium text-gray-700 mb-3">Tipo de conta</h3>
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              onClick={() => setUserType('customer')}
+              className={`p-3 rounded-lg border-2 transition-colors ${
+                userType === 'customer'
+                  ? 'border-red-500 bg-red-50 text-red-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <User className="w-5 h-5 mx-auto mb-1" />
+              <span className="text-xs font-medium">Cliente</span>
+            </button>
+            <button
+              onClick={() => setUserType('supplier')}
+              className={`p-3 rounded-lg border-2 transition-colors ${
+                userType === 'supplier'
+                  ? 'border-green-500 bg-green-50 text-green-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <Store className="w-5 h-5 mx-auto mb-1" />
+              <span className="text-xs font-medium">Fornecedor</span>
+            </button>
+            <button
+              onClick={() => setUserType('delivery')}
+              className={`p-3 rounded-lg border-2 transition-colors ${
+                userType === 'delivery'
+                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <Truck className="w-5 h-5 mx-auto mb-1" />
+              <span className="text-xs font-medium">Entregador</span>
+            </button>
+          </div>
         </div>
 
         {/* Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            {!isLogin && (
+            {!isLogin && userType === 'supplier' && (
+              <div>
+                <label htmlFor="businessName" className="block text-sm font-medium text-gray-700 mb-1">
+                  Nome do Negócio *
+                </label>
+                <div className="relative">
+                  <Store className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    id="businessName"
+                    name="businessName"
+                    type="text"
+                    required={!isLogin && userType === 'supplier'}
+                    value={formData.businessName}
+                    onChange={handleInputChange}
+                    className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ${colorClasses.focus} focus:border-transparent transition-colors`}
+                    placeholder="Ex: Hortifruti do João"
+                  />
+                </div>
+              </div>
+            )}
+
+            {!isLogin && (userType === 'customer' || userType === 'delivery') && (
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome completo
+                  Nome completo *
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -72,10 +187,10 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
                     id="name"
                     name="name"
                     type="text"
-                    required={!isLogin}
+                    required={!isLogin && (userType === 'customer' || userType === 'delivery')}
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                    className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ${colorClasses.focus} focus:border-transparent transition-colors`}
                     placeholder="Seu nome completo"
                   />
                 </div>
@@ -84,7 +199,7 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                E-mail
+                E-mail *
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -95,15 +210,85 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                  className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ${colorClasses.focus} focus:border-transparent transition-colors`}
                   placeholder="seu@email.com"
                 />
               </div>
             </div>
 
+            {!isLogin && userType === 'delivery' && (
+              <>
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                    Telefone *
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    required={!isLogin && userType === 'delivery'}
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ${colorClasses.focus} focus:border-transparent transition-colors`}
+                    placeholder="(11) 99999-9999"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="vehicleType" className="block text-sm font-medium text-gray-700 mb-1">
+                    Tipo de Veículo *
+                  </label>
+                  <select
+                    id="vehicleType"
+                    name="vehicleType"
+                    required={!isLogin && userType === 'delivery'}
+                    value={formData.vehicleType}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ${colorClasses.focus} focus:border-transparent transition-colors`}
+                  >
+                    <option value="">Selecione o tipo de veículo</option>
+                    <option value="bike">Bicicleta</option>
+                    <option value="motorcycle">Moto</option>
+                    <option value="car">Carro</option>
+                    <option value="van">Van</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                    CNH (se aplicável)
+                  </label>
+                  <input
+                    id="licenseNumber"
+                    name="licenseNumber"
+                    type="text"
+                    value={formData.licenseNumber}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ${colorClasses.focus} focus:border-transparent transition-colors`}
+                    placeholder="Número da CNH"
+                  />
+                </div>
+              </>
+            )}
+
+            {!isLogin && userType === 'supplier' && (
+              <div>
+                <label htmlFor="cnpj" className="block text-sm font-medium text-gray-700 mb-1">
+                  CNPJ
+                </label>
+                <input
+                  id="cnpj"
+                  name="cnpj"
+                  type="text"
+                  value={formData.cnpj}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ${colorClasses.focus} focus:border-transparent transition-colors`}
+                  placeholder="00.000.000/0000-00"
+                />
+              </div>
+            )}
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Senha
+                Senha *
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -114,7 +299,7 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                  className={`w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 ${colorClasses.focus} focus:border-transparent transition-colors`}
                   placeholder="Sua senha"
                 />
                 <button
@@ -130,7 +315,7 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
             {!isLogin && (
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirmar senha
+                  Confirmar senha *
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -141,10 +326,28 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
                     required={!isLogin}
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
+                    className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ${colorClasses.focus} focus:border-transparent transition-colors`}
                     placeholder="Confirme sua senha"
                   />
                 </div>
+              </div>
+            )}
+
+            {!isLogin && (userType === 'supplier' || userType === 'delivery') && (
+              <div>
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+                  Endereço {userType === 'delivery' ? '*' : ''}
+                </label>
+                <input
+                  id="address"
+                  name="address"
+                  type="text"
+                  required={!isLogin && userType === 'delivery'}
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 ${colorClasses.focus} focus:border-transparent transition-colors`}
+                  placeholder="Endereço completo"
+                />
               </div>
             )}
           </div>
@@ -156,13 +359,16 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                  className={`h-4 w-4 border-gray-300 rounded ${colorClasses.focus}`}
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
                   Lembrar de mim
                 </label>
               </div>
-              <button type="button" className="text-sm text-red-600 hover:text-red-500">
+              <button 
+                type="button" 
+                className={`text-sm hover:opacity-80 ${colorClasses.link}`}
+              >
                 Esqueceu a senha?
               </button>
             </div>
@@ -170,7 +376,7 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-red-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105"
+            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 bg-gradient-to-r ${colorClasses.button} text-white`}
           >
             {isLogin ? 'Entrar' : 'Criar conta'}
           </button>
@@ -182,53 +388,49 @@ export default function AuthPage({ onNavigate }: AuthPageProps) {
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="ml-2 text-red-600 hover:text-red-500 font-semibold"
+              className={`ml-2 font-semibold hover:opacity-80 ${colorClasses.link}`}
             >
               {isLogin ? 'Cadastre-se' : 'Faça login'}
             </button>
           </div>
         </form>
 
-        {/* Social Login */}
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gradient-to-br from-red-50 to-orange-50 text-gray-500">
-                Ou continue com
-              </span>
-            </div>
+        {/* Benefits */}
+        {userType === 'supplier' && (
+          <div className="bg-green-50 rounded-lg p-4 mt-6">
+            <h4 className="font-semibold text-green-800 mb-2">🌱 Benefícios para Fornecedores</h4>
+            <ul className="text-sm text-green-700 space-y-1">
+              <li>• Venda diretamente para consumidores</li>
+              <li>• Gerencie seus produtos facilmente</li>
+              <li>• Acompanhe vendas em tempo real</li>
+              <li>• Sem taxas de cadastro</li>
+            </ul>
           </div>
+        )}
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <button className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              <span className="ml-2">Google</span>
-            </button>
-
-            <button className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-              <span className="ml-2">Facebook</span>
-            </button>
+        {userType === 'delivery' && (
+          <div className="bg-blue-50 rounded-lg p-4 mt-6">
+            <h4 className="font-semibold text-blue-800 mb-2">🚚 Benefícios para Entregadores</h4>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>• Ganhe dinheiro com flexibilidade de horário</li>
+              <li>• Receba pagamentos semanalmente</li>
+              <li>• Acompanhe seus ganhos em tempo real</li>
+              <li>• Suporte 24/7 para entregadores</li>
+            </ul>
           </div>
-        </div>
+        )}
 
         {/* Terms */}
         {!isLogin && (
           <p className="text-center text-xs text-gray-600">
             Ao criar uma conta, você concorda com nossos{' '}
-            <button className="text-red-600 hover:text-red-500">Termos de Uso</button>
+            <button className={colorClasses.link}>
+              Termos de Uso
+            </button>
             {' '}e{' '}
-            <button className="text-red-600 hover:text-red-500">Política de Privacidade</button>
+            <button className={colorClasses.link}>
+              Política de Privacidade
+            </button>
           </p>
         )}
       </div>
