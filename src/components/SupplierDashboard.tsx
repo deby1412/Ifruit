@@ -30,7 +30,10 @@ export default function SupplierDashboard({ onNavigate, supplierName }: Supplier
       discount: '25% OFF',
       category: 'Frutas',
       unit: 'kg',
-      description: 'Maçãs frescas e crocantes'
+      description: 'Maçãs frescas e crocantes',
+      supplier: supplierName,
+      rating: 4.9,
+      reviews: 0
     },
     {
       id: 102,
@@ -41,7 +44,10 @@ export default function SupplierDashboard({ onNavigate, supplierName }: Supplier
       discount: '25% OFF',
       category: 'Frutas',
       unit: 'kg',
-      description: 'Bananas orgânicas doces'
+      description: 'Bananas orgânicas doces',
+      supplier: supplierName,
+      rating: 4.8,
+      reviews: 0
     }
   ]);
 
@@ -77,7 +83,10 @@ export default function SupplierDashboard({ onNavigate, supplierName }: Supplier
         description: newProduct.description,
         discount: newProduct.originalPrice ? 
           `${Math.round((1 - parseFloat(newProduct.price) / parseFloat(newProduct.originalPrice)) * 100)}% OFF` : 
-          undefined
+          undefined,
+        supplier: supplierName,
+        rating: 0,
+        reviews: 0
       };
       
       setProducts([...products, product]);

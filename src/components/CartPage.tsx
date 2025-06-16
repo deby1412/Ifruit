@@ -1,27 +1,50 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Minus, Trash2, ShoppingBag, CreditCard, MapPin, Clock } from 'lucide-react';
-import { CartItem } from '../type/Product';
+import {
+  ArrowLeft,
+  Plus,
+  Minus,
+  Trash2,
+  ShoppingBag,
+  CreditCard,
+  MapPin,
+  Clock,
+} from 'lucide-react';
+
+interface CarrinhoItem {
+  id: number;
+  produtoId: number;
+  nomeProduto: string;
+  quantidade: number;
+  precoUnitario: number;
+  imagemUrl: string;
+  categoria: string;
+  unidade: string;
+  precoOriginal?: number;
+}
 
 interface CartPageProps {
   onNavigate: (page: string) => void;
-  cartItems: CartItem[];
+  cartItems: CarrinhoItem[];
   onUpdateQuantity: (id: number, quantity: number) => void;
   onRemoveItem: (id: number) => void;
   onClearCart: () => void;
 }
 
-export default function CartPage({ 
-  onNavigate, 
-  cartItems, 
-  onUpdateQuantity, 
-  onRemoveItem, 
-  onClearCart 
+export default function CartPage({
+  onNavigate,
+  cartItems,
+  onUpdateQuantity,
+  onRemoveItem,
+  onClearCart,
 }: CartPageProps) {
   const [deliveryOption, setDeliveryOption] = useState('delivery');
   const [paymentMethod, setPaymentMethod] = useState('credit');
   const [showCheckout, setShowCheckout] = useState(false);
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.precoUnitario * item.quantidade,
+    0
+  );
   const deliveryFee = deliveryOption === 'delivery' ? (subtotal >= 50 ? 0 : 8.99) : 0;
   const total = subtotal + deliveryFee;
 
@@ -35,7 +58,6 @@ export default function CartPage({
 
   const handleCheckout = () => {
     setShowCheckout(true);
-    // Simulate order processing
     setTimeout(() => {
       alert('Pedido realizado com sucesso! Você receberá um e-mail de confirmação.');
       onClearCart();
@@ -84,7 +106,6 @@ export default function CartPage({
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-sm">
               <div className="p-6 border-b border-gray-200">
@@ -103,23 +124,26 @@ export default function CartPage({
 
               <div className="p-6 space-y-4">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                  <div
+                    key={item.id}
+                    className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg"
+                  >
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={item.imagemUrl}
+                      alt={item.nomeProduto}
                       className="w-16 h-16 object-cover rounded-lg"
                     />
-                    
+
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                      <p className="text-sm text-gray-600">{item.category}</p>
+                      <h3 className="font-semibold text-gray-800">{item.nomeProduto}</h3>
+                      <p className="text-sm text-gray-600">{item.categoria}</p>
                       <div className="flex items-center space-x-2 mt-1">
                         <span className="text-lg font-bold text-red-500">
-                          R$ {item.price.toFixed(2)}/{item.unit}
+                          R$ {item.precoUnitario.toFixed(2)}/{item.unidade}
                         </span>
-                        {item.originalPrice && (
+                        {item.precoOriginal && (
                           <span className="text-sm text-gray-500 line-through">
-                            R$ {item.originalPrice.toFixed(2)}
+                            R$ {item.precoOriginal.toFixed(2)}
                           </span>
                         )}
                       </div>
@@ -127,16 +151,16 @@ export default function CartPage({
 
                     <div className="flex items-center space-x-3">
                       <button
-                        onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                        onClick={() => handleQuantityChange(item.id, item.quantidade - 1)}
                         className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
-                      
-                      <span className="w-8 text-center font-semibold">{item.quantity}</span>
-                      
+
+                      <span className="w-8 text-center font-semibold">{item.quantidade}</span>
+
                       <button
-                        onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                        onClick={() => handleQuantityChange(item.id, item.quantidade + 1)}
                         className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
                       >
                         <Plus className="w-4 h-4" />
@@ -145,7 +169,7 @@ export default function CartPage({
 
                     <div className="text-right">
                       <p className="font-bold text-gray-800">
-                        R$ {(item.price * item.quantity).toFixed(2)}
+                        R$ {(item.precoUnitario * item.quantidade).toFixed(2)}
                       </p>
                       <button
                         onClick={() => onRemoveItem(item.id)}
@@ -160,12 +184,10 @@ export default function CartPage({
             </div>
           </div>
 
-          {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm p-6 sticky top-8">
               <h3 className="text-xl font-bold text-gray-800 mb-4">Resumo do Pedido</h3>
-              
-              {/* Delivery Options */}
+
               <div className="mb-6">
                 <h4 className="font-semibold text-gray-800 mb-3">Opção de Entrega</h4>
                 <div className="space-y-2">
@@ -176,7 +198,6 @@ export default function CartPage({
                       value="delivery"
                       checked={deliveryOption === 'delivery'}
                       onChange={(e) => setDeliveryOption(e.target.value)}
-                      className="text-red-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center">
@@ -189,7 +210,7 @@ export default function CartPage({
                       {subtotal >= 50 ? 'Grátis' : 'R$ 8,99'}
                     </span>
                   </label>
-                  
+
                   <label className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
                     <input
                       type="radio"
@@ -197,7 +218,6 @@ export default function CartPage({
                       value="pickup"
                       checked={deliveryOption === 'pickup'}
                       onChange={(e) => setDeliveryOption(e.target.value)}
-                      className="text-red-500"
                     />
                     <div className="flex-1">
                       <div className="flex items-center">
@@ -211,54 +231,34 @@ export default function CartPage({
                 </div>
               </div>
 
-              {/* Payment Method */}
               <div className="mb-6">
                 <h4 className="font-semibold text-gray-800 mb-3">Forma de Pagamento</h4>
                 <div className="space-y-2">
-                  <label className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="credit"
-                      checked={paymentMethod === 'credit'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="text-red-500"
-                    />
-                    <CreditCard className="w-5 h-5 text-gray-500" />
-                    <span>Cartão de Crédito</span>
-                  </label>
-                  
-                  <label className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="debit"
-                      checked={paymentMethod === 'debit'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="text-red-500"
-                    />
-                    <CreditCard className="w-5 h-5 text-gray-500" />
-                    <span>Cartão de Débito</span>
-                  </label>
-                  
-                  <label className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="pix"
-                      checked={paymentMethod === 'pix'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="text-red-500"
-                    />
-                    <div className="w-5 h-5 bg-green-500 rounded text-white text-xs flex items-center justify-center font-bold">
-                      P
-                    </div>
-                    <span>PIX</span>
-                  </label>
+                  {['credit', 'debit', 'pix'].map((method) => (
+                    <label
+                      key={method}
+                      className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
+                    >
+                      <input
+                        type="radio"
+                        name="payment"
+                        value={method}
+                        checked={paymentMethod === method}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                      />
+                      <CreditCard className="w-5 h-5 text-gray-500" />
+                      <span>
+                        {method === 'credit'
+                          ? 'Cartão de Crédito'
+                          : method === 'debit'
+                          ? 'Cartão de Débito'
+                          : 'PIX'}
+                      </span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
-              {/* Price Summary */}
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between">
                   <span>Subtotal</span>

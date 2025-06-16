@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Heart, ShoppingCart, Star, Filter, Search, Droplets, Zap, Coffee } from 'lucide-react';
+import {
+  Heart,
+  ShoppingCart,
+  Star,
+  Filter,
+  Search,
+  Droplets,
+  Zap,
+  Coffee
+} from 'lucide-react';
 import { Product } from '../type/Product';
 import Footer from './Footer';
 import SidebarBebidas from './SidebarBebidas';
@@ -147,43 +156,24 @@ export default function BebidasPage({ onAddToCart, onToggleFavorite, isFavorite 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      {/* Hero Section */}
-<div
-  className="relative text-white py-20"
-  style={{
-    backgroundImage: "url('/imagem3.webp')",
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  }}
->
-  <div className="absolute inset-0 bg-blue-700 opacity-60"></div>
-  <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
-    <h1 className="text-4xl md:text-6xl font-bold mb-4">Bebidas Refrescantes</h1>
-    <p className="text-xl md:text-2xl mb-8 text-blue-100">
-      Sucos, refrigerantes, águas e muito mais para matar sua sede
-    </p>
-    <div className="flex flex-wrap justify-center gap-6 text-sm">
-      <div className="flex items-center space-x-2">
-        <Droplets className="w-5 h-5" />
-        <span>Sempre Geladas</span>
+      <div className="relative text-white py-20" style={{ backgroundImage: "url('/imagem3.webp')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-blue-700 opacity-60"></div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">Bebidas Refrescantes</h1>
+          <p className="text-xl md:text-2xl mb-8 text-blue-100">
+            Sucos, refrigerantes, águas e muito mais para matar sua sede
+          </p>
+          <div className="flex flex-wrap justify-center gap-6 text-sm">
+            <div className="flex items-center space-x-2"><Droplets className="w-5 h-5" /><span>Sempre Geladas</span></div>
+            <div className="flex items-center space-x-2"><Zap className="w-5 h-5" /><span>Entrega Rápida</span></div>
+            <div className="flex items-center space-x-2"><Coffee className="w-5 h-5" /><span>Variedade Completa</span></div>
+          </div>
+        </div>
       </div>
-      <div className="flex items-center space-x-2">
-        <Zap className="w-5 h-5" />
-        <span>Entrega Rápida</span>
-      </div>
-      <div className="flex items-center space-x-2">
-        <Coffee className="w-5 h-5" />
-        <span>Variedade Completa</span>
-      </div>
-    </div>
-  </div>
-</div>
 
       {/* Conteúdo com Sidebar e Produtos */}
       <div className="max-w-7xl mx-auto px-2 py-8 grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-1 w-full -ml-4">
-          <SidebarBebidas />
-        </div>
+        <div className="lg:col-span-1 w-full -ml-4"><SidebarBebidas /></div>
 
         <div className="lg:col-span-4">
           {/* Filtros e Pesquisa */}
@@ -191,22 +181,11 @@ export default function BebidasPage({ onAddToCart, onToggleFavorite, isFavorite 
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Buscar bebidas..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                <input type="text" placeholder="Buscar bebidas..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
               </div>
-
               <div className="flex items-center space-x-4">
                 <Filter className="w-5 h-5 text-gray-500" />
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
+                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                   <option value="popular">Mais Popular</option>
                   <option value="price-low">Menor Preço</option>
                   <option value="price-high">Maior Preço</option>
@@ -220,15 +199,7 @@ export default function BebidasPage({ onAddToCart, onToggleFavorite, isFavorite 
           {/* Categorias */}
           <div className="mb-8 flex flex-wrap gap-3">
             {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center space-x-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                  selectedCategory === category.id
-                    ? 'bg-blue-500 text-white shadow-lg transform scale-105'
-                    : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 shadow-sm'
-                }`}
-              >
+              <button key={category.id} onClick={() => setSelectedCategory(category.id)} className={`flex items-center space-x-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${selectedCategory === category.id ? 'bg-blue-500 text-white shadow-lg transform scale-105' : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-600 shadow-sm'}`}>
                 <span className="text-lg">{category.icon}</span>
                 <span>{category.name}</span>
               </button>
@@ -242,18 +213,9 @@ export default function BebidasPage({ onAddToCart, onToggleFavorite, isFavorite 
                 <div className="relative">
                   <img src={product.image} alt={product.name} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
                   {product.discount && (
-                    <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                      -{product.discount}%
-                    </div>
+                    <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">-{product.discount}%</div>
                   )}
-                  <button
-                    onClick={() => onToggleFavorite(product)}
-                    className={`absolute bottom-3 right-3 p-2 rounded-full transition-colors ${
-                      isFavorite(product.id)
-                        ? 'bg-red-500 text-white'
-                        : 'bg-white text-gray-600 hover:bg-red-50 hover:text-red-500'
-                    }`}
-                  >
+                  <button onClick={() => onToggleFavorite(product)} className={`absolute bottom-3 right-3 p-2 rounded-full transition-colors ${isFavorite(product.id) ? 'bg-red-500 text-white' : 'bg-white text-gray-600 hover:bg-red-50 hover:text-red-500'}`}>
                     <Heart className={`w-5 h-5 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
                   </button>
                 </div>
@@ -274,22 +236,14 @@ export default function BebidasPage({ onAddToCart, onToggleFavorite, isFavorite 
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col">
                       <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-blue-600">
-                          R$ {product.price.toFixed(2)}
-                        </span>
+                        <span className="text-lg font-bold text-blue-600">R$ {product.price.toFixed(2)}</span>
                         {product.originalPrice && (
-                          <span className="text-sm text-gray-400 line-through">
-                            R$ {product.originalPrice.toFixed(2)}
-                          </span>
+                          <span className="text-sm text-gray-400 line-through">R$ {product.originalPrice.toFixed(2)}</span>
                         )}
                       </div>
                       <span className="text-xs text-gray-500">{product.unit}</span>
                     </div>
-
-                    <button
-                      onClick={() => onAddToCart(product)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors"
-                    >
+                    <button onClick={() => onAddToCart(product)} className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors">
                       <ShoppingCart className="w-5 h-5" />
                     </button>
                   </div>

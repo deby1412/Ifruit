@@ -1,3 +1,15 @@
+export interface CartItem {
+  id: number; // ID local para controle no frontend
+  produtoId: number; // ID do produto original (referência ao banco)
+  nomeProduto: string;
+  precoUnitario: number;
+  precoOriginal?: number;
+  imagemUrl: string;
+  categoria: string;
+  unidade: string;
+  quantidade: number;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -14,10 +26,6 @@ export interface Product {
   isOrganic?: boolean;
 }
 
-export interface CartItem extends Product {
-  quantity: number;
-}
-
 export interface DeliveryOrder {
   id: number;
   customerName: string;
@@ -31,4 +39,19 @@ export interface DeliveryOrder {
   status: 'pending' | 'accepted' | 'picked_up' | 'delivered' | 'cancelled';
   paymentMethod: string;
   deliveryFee: number;
+}
+
+// Função auxiliar para converter um Product para CartItem
+export function convertProductToCartItem(product: Product): CartItem {
+  return {
+    id: product.id,
+    produtoId: product.id,
+    nomeProduto: product.name,
+    precoUnitario: product.price,
+    precoOriginal: product.originalPrice,
+    imagemUrl: product.image,
+    categoria: product.category,
+    unidade: product.unit,
+    quantidade: 1
+  };
 }
